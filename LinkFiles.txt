@@ -1,0 +1,2 @@
+cd /d C:\Users\Tyron\AppData\Roaming\Factorio\mods
+mklink /J pig-sorter_1.0.0 C:\Users\Tyron\OneDrive\Desktop\Sorter\Pigs-Sorting\pig-sorter_1.0.0

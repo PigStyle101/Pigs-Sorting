@@ -1,5 +1,5 @@
 local util = require("scripts/data-util")
-local newtable =
+local rename248k =
 {
     ["el_charge_crystal_recipe"] = "248k-charge-mysterious-crystal",
     ["el_ALK_recipe"] = "248k-aluminium-ceramic",
@@ -15,5 +15,6 @@ local newtable =
     ["fi_ceramic_recipe"] = "248k-ceramic-crushed-stone",
 }
 
-
-util.create_and_replace_recipe(newtable)
+if mods["248k"] then
+util.create_and_replace_recipe(rename248k)
+end

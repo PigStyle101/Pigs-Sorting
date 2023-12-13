@@ -12,7 +12,7 @@ data:extend(
         {
             type = "item-group",
             name = "fluid-logistics",
-            icon = "__base__/graphics/icons/pipe.png",
+            icon = "__base__/graphics/icons/storage-tank.png",
             icon_size = 64,
             icon_mipmaps = 4,
             inventory_order = "[b]",

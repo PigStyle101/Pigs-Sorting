@@ -24,9 +24,9 @@ end
 ---@param s string
 ---@param pattern string
 ---@return boolean
-function data_util.find_string_plain(s,pattern)
-if string.find(string.lower(s),string.lower(pattern),1,true) then return true end
-return false
+function data_util.find_string_plain(s, pattern)
+  if string.find(string.lower(s), string.lower(pattern), 1, true) then return true end
+  return false
 end
 
 function data_util.placableAsEntity(check)
@@ -138,6 +138,163 @@ function data_util.CheckNames(name)
   for _, recipe in pairs(data.raw.recipe) do
     if string.find(recipe.name, name) then
       log(recipe.name)
+    end
+  end
+end
+
+---Checks if SortDirectlyTable contains the recipe.
+---@param item any
+---@return boolean
+function data_util.SortDirectly(item)
+  local contains = false
+  for name, subgroup in pairs(SortDirectTable) do
+    if (item.name == name) then
+      data_util.debuglog(subgroup.name)
+      data_util.debuglog(subgroup.order)
+      item.subgroup = subgroup.name
+      item.order = subgroup.order
+      contains = true
+      goto continue
+    else
+      contains = false
+    end
+  end
+  ::continue::
+  data_util.debuglog("PIG:DirectSort:" .. tostring(contains) .. ":name:" .. item.name)
+  return contains
+end
+
+---Checks Blacklist of what group we are on.
+---@param name string
+---@param group string
+---@return boolean
+function data_util.InBlacklist(name, group)
+  for _, value in pairs(GroupBlacklist[group]) do
+    if (data_util.find_string_plain(name, value)) then
+      data_util.debuglog("PIG:Blacklist:Found:" .. value)
+      return true
+    end
+  end
+end
+
+---Checks if there is subgroup and set group as parent, if none make one and set its parent to group
+---@param name string # what to check for
+---@param group string # what group to add if there is none
+function data_util.CreateSubGroupIfNone(name, group, Sorder)
+  if not data_util.subgroup_table_contains_name(data.raw["item-subgroup"], name) then
+    data:extend({
+      {
+        type = "item-subgroup",
+        name = name,
+        group = group,
+        order = Sorder
+      }
+    })
+    data_util.debuglog("PIG:Group:" .. group .. ",Subgroup:" .. name)
+  else
+    --set subgroup to group.
+    data.raw["item-subgroup"][name].group = group
+    data.raw["item-subgroup"][name].order = Sorder
+  end
+end
+
+---Removes recipie unlocks from a specifice tech
+---@param tech_effects effects #Tech to remove from
+---@param recipe_name string #Recipe to remove
+function data_util.remove_recipe_from_effects(tech_effects, recipe_name)
+  local index = 0
+  for _, _item in ipairs(tech_effects) do
+    if _item.type == "unlock-recipe" and _item.recipe == recipe_name then
+      index = _
+      break
+    end
+  end
+  if index > 0 then
+    table.remove(tech_effects, index)
+  end
+end
+
+---Sets the recipe subgroup name and then group as parent. optional: sets order
+---@param item any #recipe name
+---@param subgroup string #subgroup name
+---@param group string #group name
+---@param Iorder string #recipe order
+---@param Sorder string #sub order
+function data_util.SetGroupSubOrder(item, subgroup, group, Iorder, Sorder)
+  data_util.CreateSubGroupIfNone(subgroup, group, Sorder)
+  item.subgroup = subgroup
+  if Iorder then
+    item.order = Iorder
+  end
+end
+
+local function find_and_replace_ingredients_sub(ingredients, replacements)
+  for _, ingredient in pairs(ingredients) do
+    for from, to in pairs(replacements) do
+      if ingredient.name == from then
+        ingredient.name = to
+      elseif ingredient[1] == from then
+        ingredient[1] = to
+      end
+    end
+  end
+end
+
+-- Input: {["replace-from"] = "replace-to"}
+function data_util.find_and_replace_ingredients(replacements)
+  for _, recipe in pairs(data.raw.recipe) do
+    if recipe.ingredients then find_and_replace_ingredients_sub(recipe.ingredients, replacements) end
+    if recipe.normal and recipe.normal.ingredients then
+      find_and_replace_ingredients_sub(recipe.normal.ingredients,
+        replacements)
+    end
+    if recipe.expensive and recipe.expensive.ingredients then
+      find_and_replace_ingredients_sub(
+        recipe.expensive.ingredients, replacements)
+    end
+  end
+end
+
+function data_util.find_and_replace_tech(from, to)
+  data_util.debuglog("Starting FART search")
+  for _, tech in pairs(data.raw.technology) do
+    if tech.effects then
+      for _, effect in pairs(tech.effects) do
+        if effect.type == "unlock-recipe" and effect.recipe == from then
+          data_util.debuglog("Found " .. from .. " in recipe " .. tech.name)
+          data_util.remove_recipe_from_effects(tech.effects, from)
+          table.insert(tech.effects, { type = "unlock-recipe", recipe = to })
+        end
+      end
+    end
+  end
+end
+
+-- Input: {["replace-from"] = "replace-to"}
+function data_util.create_and_replace_recipe(replacements)
+  for from, to in pairs(replacements) do
+    local new = table.deepcopy(data.raw.recipe[from])
+    new.name = to
+    data:extend({ new })
+    data_util.find_and_replace_tech(from, to)
+    data_util.replace_on_modules(from, to)
+    data.raw.recipe[from] = nil
+  end
+end
+
+function data_util.replace_on_modules(from, to)
+  for _, mod in pairs(data.raw.module) do
+    data_util.debuglog("Mod:" .. mod.name)
+    if mod.limitation then
+      data_util.debuglog("Limit:true")
+      for key, lim in pairs(mod.limitation) do
+        data_util.debuglog("Limit:" .. lim)
+        if from == lim then
+          data_util.debuglog("lim=from")
+          data_util.debuglog("From:" .. from)
+          mod.limitation[key] = to
+        end
+      end
     end
   end
 end

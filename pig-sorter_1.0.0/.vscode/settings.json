@@ -2,6 +2,10 @@
     "factorio.versions": [
         {
             "name": "1.1.8",
+            "factorioPath": "c:\\SteamLibrary\\steamapps\\common\\Factorio\\bin\\x64\\factorio.exe"
+        },
+        {
+            "name": "1111",
             "factorioPath": "c:\\SteamLibrary\\steamapps\\common\\Factorio\\bin\\x64\\factorio.exe",
             "active": true
         }

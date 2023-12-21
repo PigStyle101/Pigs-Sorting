@@ -261,7 +261,6 @@ function data_util.find_and_replace_tech(from, to)
     if tech.effects then
       for _, effect in pairs(tech.effects) do
         if effect.type == "unlock-recipe" and effect.recipe == from then
-          data_util.debuglog("Found " .. from .. " in recipe " .. tech.name)
           data_util.remove_recipe_from_effects(tech.effects, from)
           table.insert(tech.effects, { type = "unlock-recipe", recipe = to })
         end
@@ -273,30 +272,49 @@ end
 -- Input: {["replace-from"] = "replace-to"}
 function data_util.create_and_replace_recipe(replacements)
   for from, to in pairs(replacements) do
+    if data.raw.recipe[from] then
     local new = table.deepcopy(data.raw.recipe[from])
     new.name = to
     data:extend({ new })
     data_util.find_and_replace_tech(from, to)
     data_util.replace_on_modules(from, to)
+    data_util.replace_fixed_recipe(from,to)
     data.raw.recipe[from] = nil
+    else
+      data_util.debuglog("from:"..from.."to:"..to.."not found")
+    end
+  end
+end
+
+function data_util.create_and_replace_item(replacements)
+  for from, to in pairs(replacements) do
+    if data.raw.item[from] then
+      local new = table.deepcopy(data.raw.item[from])
+      new.name = to
+    end
   end
 end
 
 function data_util.replace_on_modules(from, to)
   for _, mod in pairs(data.raw.module) do
-    data_util.debuglog("Mod:" .. mod.name)
     if mod.limitation then
-      data_util.debuglog("Limit:true")
       for key, lim in pairs(mod.limitation) do
-        data_util.debuglog("Limit:" .. lim)
         if from == lim then
-          data_util.debuglog("lim=from")
-          data_util.debuglog("From:" .. from)
           mod.limitation[key] = to
         end
       end
     end
   end
+end
+
+function data_util.replace_fixed_recipe(from,to)
+for _, mach in pairs(data.raw["assembling-machine"]) do
+  if mach.fixed_recipe then 
+    if mach.fixed_recipe == from then
+      mach.fixed_recipe = to
+    end
+  end
+end
 end
 
 return data_util

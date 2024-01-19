@@ -273,24 +273,51 @@ end
 function data_util.create_and_replace_recipe(replacements)
   for from, to in pairs(replacements) do
     if data.raw.recipe[from] then
-    local new = table.deepcopy(data.raw.recipe[from])
-    new.name = to
-    data:extend({ new })
-    data_util.find_and_replace_tech(from, to)
-    data_util.replace_on_modules(from, to)
-    data_util.replace_fixed_recipe(from,to)
-    data.raw.recipe[from] = nil
+      local new = table.deepcopy(data.raw.recipe[from])
+      new.name = to
+      data:extend({ new })
+      data_util.find_and_replace_tech(from, to)
+      data_util.replace_on_modules(from, to)
+      data_util.replace_fixed_recipe(from, to)
+      data.raw.recipe[from] = nil
     else
-      data_util.debuglog("from:"..from.."to:"..to.."not found")
+      data_util.debuglog("from:" .. from .. " to:" .. to .. " not found")
     end
   end
 end
 
 function data_util.create_and_replace_item(replacements)
   for from, to in pairs(replacements) do
+    data_util.debuglog("Starting FARI for:" .. from)
     if data.raw.item[from] then
       local new = table.deepcopy(data.raw.item[from])
       new.name = to
+      new.localised_name = data_util.set_localised_name(to)
+      data:extend({ new })
+      data_util.replace_item_extras(from, to)
+      data_util.replace_extra_proto_stuff(from, to)
+      data_util.replace_items_recipe(from, to)
+      --data.raw.item[from] = nil
+    elseif data.raw.module[from] then
+      local new = table.deepcopy(data.raw.module[from])
+      new.name = to
+      new.localised_name = data_util.set_localised_name(to)
+      data:extend({ new })
+      data_util.replace_item_extras(from, to)
+      data_util.replace_extra_proto_stuff(from, to)
+      data_util.replace_items_recipe(from, to)
+      --data.raw.module[from] = nil
+    elseif data.raw.tool[from] then
+      local new = table.deepcopy(data.raw.tool[from])
+      new.name = to
+      new.localised_name = data_util.set_localised_name(to)
+      data:extend({ new })
+      data_util.replace_item_extras(from, to)
+      data_util.replace_extra_proto_stuff(from, to)
+      data_util.replace_items_recipe(from, to)
+      --data.raw.tool[from] = nil
+    else
+      data_util.debuglog("from:" .. from .. " to:" .. to .. " not found")
     end
   end
 end
@@ -307,14 +334,193 @@ function data_util.replace_on_modules(from, to)
   end
 end
 
-function data_util.replace_fixed_recipe(from,to)
-for _, mach in pairs(data.raw["assembling-machine"]) do
-  if mach.fixed_recipe then 
-    if mach.fixed_recipe == from then
-      mach.fixed_recipe = to
+function data_util.replace_fixed_recipe(from, to)
+  for _, mach in pairs(data.raw["assembling-machine"]) do
+    if mach.fixed_recipe then
+      if mach.fixed_recipe == from then
+        mach.fixed_recipe = to
+      end
     end
   end
 end
+
+function data_util.replace_item_extras(from, to)
+  for _, i in pairs(data.raw.item) do
+    if i.burnt_result then
+      if i.burnt_result == from then
+        i.burnt_result = to
+      end
+    end
+    if i.rocket_launch_products then
+      for ii, comp in pairs(i.rocket_launch_products) do
+        if comp.name then
+          if comp.name == from then
+            comp.name = to
+          end
+        else
+          for key, value in pairs(comp) do
+            if value == from then
+              i.rocket_launch_products[ii][key] = to
+            end
+          end
+        end
+      end
+    end
+    --if i.placed_as_equipment_result then
+    --  if i.placed_as_equipment_result == from then
+    --    i.placed_as_equipment_result = to
+    --  end
+    --end
+  end
+end
+
+local itemnames = { "accumulator", "ammo-turret", "arithmetic-combinator", "artillery-turret", "artillery-wagon",
+  "assembling-machine", "beacon", "boiler", "burner-generator", "car", "cargo-wagon", "combat-robot",
+  "constant-combinator", "construction-robot", "container", "curved-rail", "decider-combinator",
+  "electric-energy-interface", "electric-turret", "entity-ghost", "fish", "fluid-turret", "fluid-wagon", "furnace",
+  "gate", "generator", "heat-interface", "heat-pipe", "inserter", "item-with-entity-data", "item-with-inventory",
+  "item-with-label", "item-with-tag", "lab", "land-mine", "linked-belt", "linked-container", "loader", "loader-1x1",
+  "locomotive",
+  "logistics-container", "logistics-robot", "mining-drill", "module", "offshore-pump", "pipe", "pipe-to-ground",
+  "power-switch",
+  "programmable-speaker", "pump", "radar", "rail-chain-signal", "rail-signal", "reactor", "repair-tool", "roboport",
+  "rocket-silo", "solar-panel",
+  "spider-vehicle", "splitter", "storage-tank", "straight-rail", "tile", "train-stop", "transport-belt", "tree", "turret",
+  "underground-belt", "wall", "generator-equipment", "movement-bonus-equipment","energy-shield-equipment" }
+
+function data_util.replace_extra_proto_stuff(from, to)
+  for _, n in pairs(itemnames) do
+    if data.raw[n] then
+      for _, e in pairs(data.raw[n]) do
+        if e.next_upgrade then
+          if e.next_upgrade == from then
+            e.next_upgrade = to
+          end
+        end
+        if e.minable then
+          if e.minable.result then
+            if e.minable.result == from then
+              e.minable.result = to
+            end
+          end
+        end
+        if e.placeable_by then
+          if e.placeable_by == from then
+            e.placeable_by = to
+          end
+        end
+        if e.take_result then
+          if e.take_result == from then
+            e.take_result = to
+          end
+        elseif not e.take_result and e.name == from then
+          e.take_result = to
+        end
+        if e.items_to_place_this then
+          if e.items_to_place_this == from then
+            e.items_to_place_this = to
+          end
+        end
+        if e.inputs then
+          for key, value in pairs(e.inputs) do
+            if value.name then
+              if value.name == from then
+                value.name =to
+              end
+            else
+              if value == from then
+                e.inputs[key] = to
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+function data_util.replace_items_recipe(from, to)
+  for _, r in pairs(data.raw.recipe) do
+    if r.normal then
+      for i, comp in pairs(r.normal.ingredients) do
+        if comp.name then
+          if comp.name == from then
+            comp.name = to
+          end
+        else
+          for key, value in pairs(comp) do
+            if value == from then
+              r.normal.ingredients[i][key] = to
+            end
+          end
+        end
+      end
+    end
+    if r.expensive then
+      for i, comp in pairs(r.expensive.ingredients) do
+        if comp.name then
+          if comp.name == from then
+            comp.name = to
+          end
+        else
+          for key, value in pairs(comp) do
+            if value == from then
+              r.expensive.ingredients[i][key] = to
+            end
+          end
+        end
+      end
+    end
+    if r.ingredients then
+      for i, comp in pairs(r.ingredients) do
+        if comp.name then
+          if comp.name == from then
+            comp.name = to
+          end
+        else
+          for key, value in pairs(comp) do
+            if value == from then
+              r.ingredients[i][key] = to
+            end
+          end
+        end
+      end
+      if r.results then
+        for i, res in pairs(r.results) do
+          if res.name == from then
+            res.name = to
+          end
+          for key, value in pairs(res) do
+            if value == from then
+              r.results[i][key] = to
+            end
+          end
+        end
+      end
+      if r.result then
+        if r.result == from then
+          r.result = to
+        end
+      end
+      if r.main_product then
+        if r.main_product == from then
+          r.main_product = to
+        end
+      end
+    end
+  end
+end
+
+local function tchelper(first, rest)
+  return first:upper() .. rest:lower()
+end
+
+function data_util.set_localised_name(to)
+  local name = string.gsub(to, "-", " ")
+  name = string.gsub(name, "248k", "")
+  name = string.gsub(name, "equipment", "")
+  name = name:gsub("(%a)([%w_']*)", tchelper)
+  return name
 end
 
 return data_util

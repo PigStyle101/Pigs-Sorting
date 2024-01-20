@@ -1,2 +1,2 @@
-cd /d C:\Users\Owner\AppData\Roaming\Factorio\mods
-mklink /J pig-sorter_1.0.0 C:\Users\Owner\Desktop\SortingMod\Pigs-Sorting\pig-sorter_1.0.0
+cd /d C:\Users\tyrone\AppData\Roaming\Factorio\mods
+mklink /J pig-sorter_1.0.0 C:\Users\tyrone\Documents\GitHub\Pigs-Sorting\pig-sorter_1.0.0

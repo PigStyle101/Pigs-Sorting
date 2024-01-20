@@ -1,5 +1,5 @@
 local data_util = {}
-local debug = true
+local debug = false
 data_util.mod_name = "all-the-overhaul-modpack"
 data_util.mod_path = "__" .. data_util.mod_name .. "__"
 data_util.str_gsub = string.gsub
@@ -255,7 +255,7 @@ function data_util.find_and_replace_ingredients(replacements)
   end
 end
 
-function data_util.find_and_replace_tech(from, to)
+function data_util.find_and_replace_tech_recipe(from, to)
   data_util.debuglog("Starting FART search")
   for _, tech in pairs(data.raw.technology) do
     if tech.effects then
@@ -276,7 +276,7 @@ function data_util.create_and_replace_recipe(replacements)
       local new = table.deepcopy(data.raw.recipe[from])
       new.name = to
       data:extend({ new })
-      data_util.find_and_replace_tech(from, to)
+      data_util.find_and_replace_tech_recipe(from, to)
       data_util.replace_on_modules(from, to)
       data_util.replace_fixed_recipe(from, to)
       data.raw.recipe[from] = nil
@@ -297,6 +297,7 @@ function data_util.create_and_replace_item(replacements)
       data_util.replace_item_extras(from, to)
       data_util.replace_extra_proto_stuff(from, to)
       data_util.replace_items_recipe(from, to)
+      data_util.replace_items_resources(from, to)
       --data.raw.item[from] = nil
     elseif data.raw.module[from] then
       local new = table.deepcopy(data.raw.module[from])
@@ -306,7 +307,7 @@ function data_util.create_and_replace_item(replacements)
       data_util.replace_item_extras(from, to)
       data_util.replace_extra_proto_stuff(from, to)
       data_util.replace_items_recipe(from, to)
-      --data.raw.module[from] = nil
+      data.raw.module[from] = nil
     elseif data.raw.tool[from] then
       local new = table.deepcopy(data.raw.tool[from])
       new.name = to
@@ -315,9 +316,22 @@ function data_util.create_and_replace_item(replacements)
       data_util.replace_item_extras(from, to)
       data_util.replace_extra_proto_stuff(from, to)
       data_util.replace_items_recipe(from, to)
-      --data.raw.tool[from] = nil
+      data_util.replace_item_tech(from,to)
+      data.raw.tool[from] = nil
     else
       data_util.debuglog("from:" .. from .. " to:" .. to .. " not found")
+    end
+  end
+end
+
+function data_util.replace_item_tech(from,to)
+  for _, tech in pairs(data.raw.technology) do
+    if tech.ingredients then
+      for n, amount in pairs(tech.ingredients) do
+        if n == from then
+          n = to
+        end
+      end
     end
   end
 end
@@ -366,6 +380,9 @@ function data_util.replace_item_extras(from, to)
         end
       end
     end
+    if i.rocket_launch_product then
+      if i.rocket_launch_product[1] == from then i.rocket_launch_product[1] = to end
+    end
     --if i.placed_as_equipment_result then
     --  if i.placed_as_equipment_result == from then
     --    i.placed_as_equipment_result = to
@@ -386,7 +403,7 @@ local itemnames = { "accumulator", "ammo-turret", "arithmetic-combinator", "arti
   "programmable-speaker", "pump", "radar", "rail-chain-signal", "rail-signal", "reactor", "repair-tool", "roboport",
   "rocket-silo", "solar-panel",
   "spider-vehicle", "splitter", "storage-tank", "straight-rail", "tile", "train-stop", "transport-belt", "tree", "turret",
-  "underground-belt", "wall", "generator-equipment", "movement-bonus-equipment","energy-shield-equipment" }
+  "underground-belt", "wall", "generator-equipment", "movement-bonus-equipment", "energy-shield-equipment" }
 
 function data_util.replace_extra_proto_stuff(from, to)
   for _, n in pairs(itemnames) do
@@ -403,10 +420,18 @@ function data_util.replace_extra_proto_stuff(from, to)
               e.minable.result = to
             end
           end
+          if e.minable.results then
+            if e.minable.results == from then
+              e.minable.results = to
+            end
+          end
         end
         if e.placeable_by then
           if e.placeable_by == from then
             e.placeable_by = to
+          end
+          if e.placeable_by.item == from then
+            e.placeable_by.item = to
           end
         end
         if e.take_result then
@@ -416,16 +441,11 @@ function data_util.replace_extra_proto_stuff(from, to)
         elseif not e.take_result and e.name == from then
           e.take_result = to
         end
-        if e.items_to_place_this then
-          if e.items_to_place_this == from then
-            e.items_to_place_this = to
-          end
-        end
         if e.inputs then
           for key, value in pairs(e.inputs) do
             if value.name then
               if value.name == from then
-                value.name =to
+                value.name = to
               end
             else
               if value == from then
@@ -505,6 +525,18 @@ function data_util.replace_items_recipe(from, to)
       if r.main_product then
         if r.main_product == from then
           r.main_product = to
+        end
+      end
+    end
+  end
+end
+
+function data_util.replace_items_resources(from, to)
+  for _, r in pairs(data.raw.resource) do
+    if r.minable then
+      if r.minable.result then
+        if r.minable.result == from then
+          r.minable.result = to
         end
       end
     end

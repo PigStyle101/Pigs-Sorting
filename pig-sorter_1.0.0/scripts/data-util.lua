@@ -326,10 +326,13 @@ end
 
 function data_util.replace_item_tech(from,to)
   for _, tech in pairs(data.raw.technology) do
-    if tech.ingredients then
-      for n, amount in pairs(tech.ingredients) do
-        if n == from then
-          n = to
+    if tech.unit.ingredients then
+      for _, i in pairs(tech.unit.ingredients) do
+        if i.name == from then
+          i.name = to
+        end
+        if i[1] ==from then
+          i[1] = to
         end
       end
     end

@@ -1,5 +1,5 @@
 local data_util = {}
-local debug = false
+local debug = true
 data_util.mod_name = "all-the-overhaul-modpack"
 data_util.mod_path = "__" .. data_util.mod_name .. "__"
 data_util.str_gsub = string.gsub
@@ -290,48 +290,102 @@ function data_util.create_and_replace_item(replacements)
   for from, to in pairs(replacements) do
     data_util.debuglog("Starting FARI for:" .. from)
     if data.raw.item[from] then
-      local new = table.deepcopy(data.raw.item[from])
-      new.name = to
-      new.localised_name = data_util.set_localised_name(to)
-      data:extend({ new })
-      data_util.replace_item_extras(from, to)
-      data_util.replace_extra_proto_stuff(from, to)
-      data_util.replace_items_recipe(from, to)
-      data_util.replace_items_resources(from, to)
-      --data.raw.item[from] = nil
+      data_util.item_renamer(from, to)
     elseif data.raw.module[from] then
-      local new = table.deepcopy(data.raw.module[from])
-      new.name = to
-      new.localised_name = data_util.set_localised_name(to)
-      data:extend({ new })
-      data_util.replace_item_extras(from, to)
-      data_util.replace_extra_proto_stuff(from, to)
-      data_util.replace_items_recipe(from, to)
-      data.raw.module[from] = nil
+      data_util.module_renamer(from, to)
     elseif data.raw.tool[from] then
-      local new = table.deepcopy(data.raw.tool[from])
-      new.name = to
-      new.localised_name = data_util.set_localised_name(to)
-      data:extend({ new })
-      data_util.replace_item_extras(from, to)
-      data_util.replace_extra_proto_stuff(from, to)
-      data_util.replace_items_recipe(from, to)
-      data_util.replace_item_tech(from,to)
-      data.raw.tool[from] = nil
+      data_util.tool_renamer(from, to)
+    elseif data.raw.capsule[from] then
+      data_util.capsule_renamer(from, to)
+    elseif data.raw["item-with-entity-data"][from] then
+      data_util.item_with_entity_data_renamer(from, to)
+    elseif data.raw.fluid[from] then
+      data_util.fluid_renamer(from, to)
     else
       data_util.debuglog("from:" .. from .. " to:" .. to .. " not found")
     end
   end
 end
 
-function data_util.replace_item_tech(from,to)
+function data_util.item_renamer(from, to)
+  local new = table.deepcopy(data.raw.item[from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data_util.replace_items_resources(from, to)
+  data.raw.item[from] = nil
+end
+
+function data_util.module_renamer(from, to)
+  local new = table.deepcopy(data.raw.module[from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data.raw.module[from] = nil
+end
+
+function data_util.tool_renamer(from, to)
+  local new = table.deepcopy(data.raw.tool[from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data_util.replace_item_tech(from, to)
+  data.raw.tool[from] = nil
+end
+
+function data_util.capsule_renamer(from, to)
+  local new = table.deepcopy(data.raw.capsule[from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data_util.replace_items_resources(from, to)
+  data.raw.capsule[from] = nil
+end
+
+function data_util.item_with_entity_data_renamer(from, to)
+  local new = table.deepcopy(data.raw["item-with-entity-data"][from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data_util.replace_items_resources(from, to)
+  data.raw["item-with-entity-data"][from] = nil
+end
+
+function data_util.fluid_renamer(from, to)
+  local new = table.deepcopy(data.raw.fluid[from])
+  new.name = to
+  new.localised_name = data_util.set_localised_name(to)
+  data:extend({ new })
+  data_util.replace_item_extras(from, to)
+  data_util.replace_extra_proto_stuff(from, to)
+  data_util.replace_items_recipe(from, to)
+  data_util.replace_items_resources(from, to)
+  --data.raw.fluid[from] = nil
+end
+
+function data_util.replace_item_tech(from, to)
   for _, tech in pairs(data.raw.technology) do
     if tech.unit.ingredients then
       for _, i in pairs(tech.unit.ingredients) do
         if i.name == from then
           i.name = to
         end
-        if i[1] ==from then
+        if i[1] == from then
           i[1] = to
         end
       end
@@ -386,11 +440,6 @@ function data_util.replace_item_extras(from, to)
     if i.rocket_launch_product then
       if i.rocket_launch_product[1] == from then i.rocket_launch_product[1] = to end
     end
-    --if i.placed_as_equipment_result then
-    --  if i.placed_as_equipment_result == from then
-    --    i.placed_as_equipment_result = to
-    --  end
-    --end
   end
 end
 
@@ -400,13 +449,12 @@ local itemnames = { "accumulator", "ammo-turret", "arithmetic-combinator", "arti
   "electric-energy-interface", "electric-turret", "entity-ghost", "fish", "fluid-turret", "fluid-wagon", "furnace",
   "gate", "generator", "heat-interface", "heat-pipe", "inserter", "item-with-entity-data", "item-with-inventory",
   "item-with-label", "item-with-tag", "lab", "land-mine", "linked-belt", "linked-container", "loader", "loader-1x1",
-  "locomotive",
-  "logistics-container", "logistics-robot", "mining-drill", "module", "offshore-pump", "pipe", "pipe-to-ground",
-  "power-switch",
-  "programmable-speaker", "pump", "radar", "rail-chain-signal", "rail-signal", "reactor", "repair-tool", "roboport",
-  "rocket-silo", "solar-panel",
-  "spider-vehicle", "splitter", "storage-tank", "straight-rail", "tile", "train-stop", "transport-belt", "tree", "turret",
-  "underground-belt", "wall", "generator-equipment", "movement-bonus-equipment", "energy-shield-equipment" }
+  "locomotive", "logistics-container", "logistics-robot", "mining-drill", "module", "offshore-pump", "pipe",
+  "pipe-to-ground", "power-switch", "programmable-speaker", "pump", "radar", "rail-chain-signal", "rail-signal",
+  "reactor", "repair-tool", "roboport", "rocket-silo", "solar-panel", "spider-vehicle", "splitter", "storage-tank",
+  "straight-rail", "tile", "train-stop", "transport-belt", "tree", "turret", "underground-belt", "wall",
+  "generator-equipment", "movement-bonus-equipment", "energy-shield-equipment", "logistic-robot", "construction-robot",
+  "active-defense-equipment","fluid-turret" }
 
 function data_util.replace_extra_proto_stuff(from, to)
   for _, n in pairs(itemnames) do
@@ -441,7 +489,8 @@ function data_util.replace_extra_proto_stuff(from, to)
           if e.take_result == from then
             e.take_result = to
           end
-        elseif not e.take_result and e.name == from then
+        end
+        if not e.take_result and e.name == from then
           e.take_result = to
         end
         if e.inputs then
@@ -453,6 +502,22 @@ function data_util.replace_extra_proto_stuff(from, to)
             else
               if value == from then
                 e.inputs[key] = to
+              end
+            end
+          end
+        end
+        if e.fluid_box then
+          if e.fluid_box.filter then
+            if e.fluid_box.filter == from then
+              e.fluid_box.filter = to
+            end
+          end
+        end
+        if e.fluid_boxes then
+          for _, b in pairs(e.fluid_boxes) do
+            if b ~= true and b ~= false and b.filter then
+              if b.filter == from then
+                b.filter = to
               end
             end
           end
@@ -552,7 +617,7 @@ end
 
 function data_util.set_localised_name(to)
   local name = string.gsub(to, "-", " ")
-  name = string.gsub(name, "248k", "")
+  name = string.gsub(name, "248k", "", 1)
   name = string.gsub(name, "equipment", "")
   name = name:gsub("(%a)([%w_']*)", tchelper)
   return name

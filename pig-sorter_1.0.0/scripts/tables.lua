@@ -1,7 +1,7 @@
 --------NEED TO GO THROUGH AND DOUBLE CHECK EVERYTHING-----------------
 
 --item-logistics
-local ItemLogisticsBlacklist = { "equipment", "companion", "substrate","minibuffer","tank" }
+local ItemLogisticsBlacklist = { "equipment", "companion", "substrate", "minibuffer", "tank" }
 local ItemLogisticsSubOrder =
 {
     ["logistic"] = "[a]",
@@ -48,7 +48,7 @@ local ItemLogisticsItemOrder =
     ["inserter"] = "[i]",
 }
 --fluid-logistics
-local FluidLogisticsBlacklist = {"heat", "spaceship","display"}
+local FluidLogisticsBlacklist = { "heat", "spaceship", "display" }
 local FluidLogisticsSubOrder =
 {
     ["storage"] = "[b]",
@@ -85,7 +85,7 @@ local FluidLogisticsItemOrder =
 }
 --processing
 local ProcessingBlacklist = { "head", "coal", "sulfur", "kerosene", "fi_refinery_basic_item", "fu_drill_item",
-    "crystal", "equipment", "cube", "card","generator" }
+    "crystal", "equipment", "cube", "card", "generator" }
 local ProcessingSubOrder =
 {
     ["assembling"] = "[c]",
@@ -108,7 +108,7 @@ local ProcessingSubOrder =
     ["crusher"] = "[g]",
     ["green"] = "[g]",
     ["lab"] = "[h]",
-    
+
 }
 local ProcessingItemOrder =
 {
@@ -190,7 +190,7 @@ local NetworkItemOrder =
 }
 --transport
 local TransportBlacklist = { "turret", "shell", "laboratory", "battery", "belt", "lifesupport", "card", "scrapping",
-    "rocket", "fiber", "fuel", "fi_robo_port_item", "el_tank_item", "roboport","spaceship", }
+    "rocket", "fiber", "fuel", "fi_robo_port_item", "el_tank_item", "roboport", "spaceship", }
 local TransportSubOrder =
 {
     ["spidertron"] = "[g]",
@@ -219,7 +219,6 @@ local TransportItemOrder =
     ["power"] = "[a]",
     ["wood"] = "[a]",
     ["artillery"] = "[z]",
-    ["item"] = "[c]",
     ["engine"] = "[c]",
     ["advanced"] = "[c]",
 }
@@ -240,8 +239,7 @@ local BeaconsItemOrder =
     ["singularity"] = "[b]",
 }
 --power
-local PowerBlacklist = { "equipment", "oxygen", "star", "lead", "gr_charger_item", "fu_boiler_item", "robo",
-    "el_charger_item", "bi-bio-reactor", "stelar", "tokamak", "plasma" }
+local PowerBlacklist = { "equipment", "oxygen", "star", "lead", "robo", "bi-bio-reactor", "stelar", "tokamak", "plasma" }
 local PowerSubOrder =
 {
     ["solar"] = "[c]",
@@ -544,10 +542,44 @@ local EquipmentBlacklist = {}
 local EquipmentSubOrder =
 {
     ["armor"] = "[a]",
+    ["suit"] = "[a]",
+    ["battery-equipment"] = "[c]",
+    ["panel-equipment"] = "[d]",
+    ["rtg"] = "[e]",
+    ["portable-generator"] = "[e]",
+    ["reactor-equipment"] = "[e]",
+    ["exoskeleton"] = "[fa]",
+    ["immunity"] = "[fb]",
+    ["jetpack"] = "[g]",
+    ["adaptive"] = "[h]",
+    ["energy"] = "[h]",
+    ["player"] = "[h]",
+    ["vision"] = "[i]",
+    ["laser-def"] = "[j]",
+    ["rampant"] = "[j]",
+    ["lifesupport"] = "[k]",
+    ["discharge"] = "[l]",
+    ["personal-roboport"] = "[m]",
+    ["materials"] = "[n]",
 }
 local EquipmentItemOrder =
 {
-    ["light"] = "[a]",
+    ["light"] = "[aa]",
+    ["heavy"] = "[ab]",
+    ["modular"] = "[ac]",
+    ["thruster"] = "[ad]",
+    ["small"] = "[ae]",
+    ["portable"] = "[be]",
+    ["reactor-equipment"] = "[ce]",
+    ["jetpack"] = "[g]",
+    ["adaptive"] = "[h]",
+    ["shield"] = "[h]",
+    ["absorber"] = "[h]",
+    ["vision"] = "[i]",
+    ["rampant"] = "[j]",
+    ["defense"] = "[j]",
+    ["equipment"] = "[a]",
+    ["power"] = "[ad]", 
 }
 --defences
 local DefencesBlacklist = { "data" }
@@ -677,6 +709,99 @@ local BarrelingItemOrder =
 {
     ["barrel"] = "[a]",
 }
+--scienceData
+local ScienceDataBlacklist = { "" }
+local ScienceDataSubOrder =
+{
+    ["se-simulation"] = "[a]",
+    ["astronomic-catalogue"] = "[ab]",
+    ["biological-catalogue"] = "[b]",
+    ["fusion-catalogue"] = "[f]",
+    ["energy-catalogue"] = "[e]",
+    ["material-catalogue"] = "[m]",
+    ["matter-catalogue"] = "[m]",
+    ["astronomic-insight"] = "[ab]",
+    ["biological-insight"] = "[b]",
+    ["fusion-insight"] = "[g]",
+    ["energy-insight"] = "[e]",
+    ["material-insight"] = "[m]",
+    ["astronomic-science"] = "[ab]",
+    ["biological-science"] = "[b]",
+    ["fusion-science"] = "[g]",
+    ["energy-science"] = "[e]",
+    ["material-science"] = "[m]",
+    ["matter-science"] = "[m]",
+    ["deep-catalogue"] = "[za]",
+    ["deep-space-science"] = "[zb]",
+}
+local ScienceDataItemOrder =
+{
+    ["sign"] = "[z]",
+    ["test"] = "[z]",
+    ["astro"] = "[a]",
+    ["astrometric"] = "[a]",
+    ["gravi"] = "[g]",
+    ["genetics"] = "[g]",
+    ["bio"] = "[b]",
+    ["mech"] = "[m]",
+    ["laser"] = "[l]",
+    ["radi"] = "[r]",
+    ["thermo"] = "[t]",
+    ["electromag"] = "[e]",
+    ["fusion"] = "[f]",
+    ["energy"] = "[f]",
+    ["material"] = "[f]",
+    ["simulation"] = "[s]",
+    ["1"] = "[z]",
+    ["2"] = "[z]",
+    ["3"] = "[z]",
+    ["4"] = "[z]",
+}
+--turret
+local TurretBlacklist = { "" }
+local TurretSubOrder =
+{
+    ["artillery-turret"] = "[k]",
+    ["flamethrower-turret"] = "[j]",
+    ["glaser-turret-sniper"] = "[i]",
+    ["tesla-turret"] = "[h]",
+    ["laser-turret-big"] = "[f]",
+    ["laser-turret-small"] = "[g]",
+    ["laser-turret"] = "[e]",
+    ["gun-turret-sniper"] = "[d]",
+    ["gun-turret-big"] = "[b]",
+    ["gun-turret-small"] = "[c]",
+    ["gun-turret"] = "[a]",
+}
+local TurretItemOrder =
+{
+    ["turret"] = "[a]",
+    ["2"] = "[b]",
+    ["3"] = "[c]",
+    ["4"] = "[d]",
+    ["5"] = "[e]",
+    ["6"] = "[f]",
+    ["7"] = "[g]",
+    ["8"] = "[h]",
+    ["9"] = "[i]",
+    ["10"] = "[j]",
+    ["turret-1"] = "[c]",
+    ["turret-0"] = "[b]",
+}
+--matter
+local MatterBlacklist = { "" }
+local MatterSubOrder =
+{
+    ["matter"] = "[a]",
+    ["partical"] = "[a]",
+    ["star"] = "[a]",
+}
+local MatterItemOrder =
+{
+    ["fusion"] = "[a]",
+    ["atom"] = "[a]",
+    ["stream"] = "[a]",
+}
 
 
 GroupBlacklist = {
@@ -698,6 +823,9 @@ GroupBlacklist = {
     ["ammo"] = AmmoBlacklist,
     ["tiles"] = TilesBlacklist,
     ["barreling"] = BarrelingBlacklist,
+    ["scienceData"] = ScienceDataBlacklist,
+    ["turret"] = TurretBlacklist,
+    ["matter"] = MatterBlacklist,
 }
 GroupSubOrder = {
     ["item-logistics"] = ItemLogisticsSubOrder,
@@ -718,6 +846,9 @@ GroupSubOrder = {
     ["ammo"] = AmmoSubOrder,
     ["tiles"] = TilesSubOrder,
     ["barreling"] = BarrelingSubOrder,
+    ["scienceData"] = ScienceDataSubOrder,
+    ["turret"] = TurretSubOrder,
+    ["matter"] = MatterSubOrder,
 }
 GroupItemOrder = {
     ["item-logistics"] = ItemLogisticsItemOrder,
@@ -738,9 +869,12 @@ GroupItemOrder = {
     ["ammo"] = AmmoItemOrder,
     ["tiles"] = TilesItemOrder,
     ["barreling"] = BarrelingItemOrder,
+    ["scienceData"] = ScienceDataItemOrder,
+    ["turret"] = TurretItemOrder,
+    ["matter"] = MatterItemOrder,
 }
 --this sorts the items into these groups in this order
-GroupSortOrder = { "barreling", "item-logistics", "fluid-logistics", "processing", "network", "transport", "beacons",
+GroupSortOrder = { "scienceData","turret","matter","barreling", "item-logistics", "fluid-logistics", "processing", "network", "transport", "beacons",
     "power", "space", "defences", "equipment", "ammo", "tiles", "science", "resources", "manufactoring", "electronics",
     "fluids" }
 
@@ -753,12 +887,12 @@ ReplaceSubgroup = {
     ["crust-extractor"] = "drill",
     ["mantle-extractor"] = "drill",
     ["moho-extractor"] = "drill",
-    ["plant-chemical"] = "refinery",
+    --["plant-chemical"] = "refinery",
 }
 --this will assign perfect matches to there own subgroup
 ReplaceSubgroupDirectName =
 {
-    ["coke"] = { name = "coal",order = "[aa]" },
+    ["coke"] = { name = "coal", order = "[aa]" },
 }
 
 --This will directly add item to subgroup, if no subgroup exist, it will fail

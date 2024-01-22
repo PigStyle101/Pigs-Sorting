@@ -172,6 +172,33 @@ data:extend(
             order = "[t]"
         },
         {
+            type = "item-group",
+            name = "scienceData",
+            icon = "__space-exploration-graphics__/graphics/icons/catalogue/material-catalogue-1.png",
+            icon_size = 64,
+            icon_mipmaps = 1,
+            inventory_order = "cy",
+            order = "cy"
+        },
+        {
+            type = "item-group",
+            name = "turret",
+            icon = "__base__/graphics/icons/gun-turret.png",
+            icon_size = 64,
+            icon_mipmaps = 1,
+            inventory_order = "db",
+            order = "db"
+        },
+        {
+            type = "item-group",
+            name = "matter",
+            icon = "__base__/graphics/icons/heat-interface.png",
+            icon_size = 64,
+            icon_mipmaps = 1,
+            inventory_order = "db",
+            order = "db"
+        },
+        {
             type = "item-subgroup",
             name = "extra",
             group = "extra",

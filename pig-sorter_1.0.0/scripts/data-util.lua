@@ -375,7 +375,7 @@ function data_util.fluid_renamer(from, to)
   data_util.replace_extra_proto_stuff(from, to)
   data_util.replace_items_recipe(from, to)
   data_util.replace_items_resources(from, to)
-  --data.raw.fluid[from] = nil
+  data.raw.fluid[from] = nil
 end
 
 function data_util.replace_item_tech(from, to)
@@ -454,7 +454,7 @@ local itemnames = { "accumulator", "ammo-turret", "arithmetic-combinator", "arti
   "reactor", "repair-tool", "roboport", "rocket-silo", "solar-panel", "spider-vehicle", "splitter", "storage-tank",
   "straight-rail", "tile", "train-stop", "transport-belt", "tree", "turret", "underground-belt", "wall",
   "generator-equipment", "movement-bonus-equipment", "energy-shield-equipment", "logistic-robot", "construction-robot",
-  "active-defense-equipment","fluid-turret" }
+  "active-defense-equipment", "fluid-turret" }
 
 function data_util.replace_extra_proto_stuff(from, to)
   for _, n in pairs(itemnames) do
@@ -518,6 +518,15 @@ function data_util.replace_extra_proto_stuff(from, to)
             if b ~= true and b ~= false and b.filter then
               if b.filter == from then
                 b.filter = to
+              end
+            end
+          end
+        end
+        if e.attack_parameters then
+          if e.attack_parameters.fluids then
+            for _, f in pairs(e.attack_parameters.fluids) do
+              if f.type == from then
+                f.type = to
               end
             end
           end

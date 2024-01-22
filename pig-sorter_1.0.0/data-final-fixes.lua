@@ -1,2 +1,2 @@
 require("scripts/rename")
---require("scripts/sorter")
+require("scripts/sorter")
